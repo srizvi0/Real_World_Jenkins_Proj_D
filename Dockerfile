@@ -1,8 +1,8 @@
-FROM lolhens/baseimage-openjre
+FROM openjdk:8u151-jdk-alpine3.7
 
 MAINTAINER "NAJAM RIZVI"
 
-ADD target/secretsanta-0.0.1-SNAPSHOT.jar secretsanta-0.0.1-SNAPSHOT.jar  
+COPY target/secretsanta-0.0.1-SNAPSHOT.jar secretsanta-0.0.1-SNAPSHOT.jar  
 
 EXPOSE 8085
 
