@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    
+    tools{
+        maven 'maven'
+    }
+
+    stages {
+        stage('Git-Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: 'main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/srizvi0/Real_World_Jenkins_Proj_D.git']])
+            }
+        }
+        stage ('Maven Compile'){
+            steps{
+                sh 'mvn clean compile'
+            }
+        }
+        stage ('Trivy Scan'){
+            steps{
+                sh 'trivy fs --security-checks vuln,config /var/lib/jenkins/workspace/Pipeline_A '
+            }
+        }
+        
+        stage ('Maven Build'){
+            steps{
+                sh 'mvn clean install'
+            }
+        }
+        
+        stage ('Docker Build'){
+            steps{
+                withDockerRegistry(credentialsId: 'dockercre23', url: "") {
+                    sh 'docker build -t build12 .'
+                }
+            }
+        }
+        stage ('Docker Tag & Push'){
+            steps{
+                withDockerRegistry(credentialsId: 'dockercre23', url: "") {
+                    sh 'docker tag build12 najamrizvi3/projd'
+                    sh 'docker push najamrizvi3/projd'
+                }
+            }
+        }
+        
+        stage ('Deploy to Kubernetes'){
+            steps{
+                script{
+                    withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kubeconfig2', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                        sh 'kubectl get ns'
+                        sh 'kubectl apply -f Deployment.yml'
+                        sh 'kubectl get svc'
+                    }
+                }
+            }
+        }
+    }
+}
