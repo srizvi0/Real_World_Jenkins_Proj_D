@@ -1,9 +1,9 @@
 FROM openjdk:8u151-jdk-alpine3.7
 
-ENV APP_HOME /usr/src/app
+MAINTAINER "NAJAM RIZVI"
 
-COPY target/secretsanta-0.0.1-SNAPSHOT.jar $APP_HOME/app.jar
+COPY target/secretsanta-0.0.1-SNAPSHOT.jar secretsanta-0.0.1-SNAPSHOT.jar  
 
-WORKDIR $APP_HOME
+EXPOSE 8085
 
-ENTRYPOINT exec java -jar app.jar 
+ENTRYPOINT ["java", "-jar", "secretsanta-0.0.1-SNAPSHOT.jar"]
